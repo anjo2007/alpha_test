@@ -1,0 +1,57 @@
+{
+  "manifest_version": 3,
+  "name": "ALPHA Quant-Semantic Terminal",
+  "version": "1.0.0",
+  "description": "Real-time browser-native quantitative and search-grounded semantic intelligence.",
+  "permissions": [
+    "storage",
+    "alarms",
+    "identity",
+    "notifications"
+  ],
+  "host_permissions": [
+    "https://query1.finance.yahoo.com/*",
+    "https://generativelanguage.googleapis.com/*",
+    "https://gmail.googleapis.com/*",
+    "https://firestore.googleapis.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_ui": {
+    "page": "settings.html",
+    "open_in_tab": true
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "ALPHA Terminal",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["styles.css", "icon.png", "icon16.png", "icon48.png", "icon128.png"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "oauth2": {
+    "client_id": "783264951478-alpha-placeholder.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/gmail.send"
+    ]
+  }
+}

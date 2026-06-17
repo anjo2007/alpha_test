@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ALPHA // PORTAL</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      width: 420px;
+      padding: 16px;
+      background-color: var(--bg-obsidian-deep);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    .popup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-glass);
+      padding-bottom: 10px;
+    }
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-text {
+      font-family: var(--font-display);
+      font-size: 16px;
+      letter-spacing: 2px;
+      color: var(--text-slate-light);
+      font-weight: 700;
+    }
+    .settings-link {
+      color: var(--text-slate-dim);
+      text-decoration: none;
+      font-size: 18px;
+      display: inline-flex;
+      align-items: center;
+      transition: var(--transition-smooth);
+    }
+    .settings-link:hover {
+      color: var(--accent-cyan-glow);
+      transform: rotate(45deg);
+    }
+    .watchlist-title {
+      font-family: var(--font-display);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-slate-dim);
+      margin-top: 16px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .watchlist-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 250px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+    .watchlist-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: var(--bg-glass-card);
+      border: 1px solid var(--border-glass);
+      border-radius: 8px;
+      transition: var(--transition-smooth);
+    }
+    .watchlist-item:hover {
+      border-color: var(--accent-cyan-glow);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.1);
+    }
+    .dark-theme .watchlist-item:hover {
+      border-color: var(--accent-cyan-glow);
+      box-shadow: 0 4px 15px rgba(0, 255, 224, 0.15);
+    }
+    .watchlist-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .watchlist-ticker {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-slate-light);
+    }
+    .watchlist-item-price {
+      font-size: 13px;
+      color: var(--text-slate-dim);
+    }
+    .watchlist-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .watchlist-score-tag {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-align: center;
+      min-width: 44px;
+    }
+    .watchlist-score-tag.bullish {
+      background: rgba(2, 132, 199, 0.1);
+      color: var(--accent-cyan-glow);
+      border: 1px solid rgba(2, 132, 199, 0.2);
+    }
+    .dark-theme .watchlist-score-tag.bullish {
+      background: rgba(0, 255, 224, 0.1);
+      color: var(--accent-cyan-glow);
+      border: 1px solid rgba(0, 255, 224, 0.2);
+    }
+    .watchlist-score-tag.bearish {
+      background: rgba(217, 70, 239, 0.1);
+      color: var(--accent-magenta-neon);
+      border: 1px solid rgba(217, 70, 239, 0.2);
+    }
+    .dark-theme .watchlist-score-tag.bearish {
+      background: rgba(255, 0, 127, 0.1);
+      color: var(--accent-magenta-neon);
+      border: 1px solid rgba(255, 0, 127, 0.2);
+    }
+    .watchlist-score-tag.neutral {
+      background: var(--bg-input);
+      color: var(--text-slate-dim);
+      border: 1px solid var(--border-glass);
+    }
+    .btn-icon {
+      background: none;
+      border: none;
+      color: var(--text-slate-dim);
+      cursor: pointer;
+      font-size: 12px;
+      transition: var(--transition-smooth);
+      padding: 4px;
+    }
+    .btn-icon:hover {
+      color: var(--accent-magenta-neon);
+    }
+    .empty-state {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-slate-dim);
+      font-size: 12px;
+      border: 1px dashed var(--border-glass);
+      border-radius: 8px;
+    }
+    .quick-search-box {
+      margin-bottom: 12px;
+    }
+    .analysis-container {
+      display: none;
+      margin-top: 16px;
+      border-top: 1px solid var(--border-glass);
+      padding-top: 16px;
+      animation: fadeIn 0.3s ease;
+    }
+    .analysis-close-btn {
+      float: right;
+      cursor: pointer;
+      color: var(--text-slate-dim);
+      font-size: 14px;
+    }
+    .analysis-close-btn:hover {
+      color: var(--text-slate-light);
+    }
+  </style>
+</head>
+<body>
+  <div class="popup-header">
+    <div class="logo-container">
+      <img src="icon.png" alt="ALPHA" style="width: 22px; height: 22px; border-radius: 4px;">
+      <div class="logo-text">ALPHA // PORTAL</div>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <button class="theme-toggle-btn" id="popup-theme-toggle" title="Toggle Theme">☀️</button>
+      <a href="#" id="open-settings" class="settings-link" title="Open Settings">&#9881;</a>
+    </div>
+  </div>
+
+  <!-- Tab navigation -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-btn-watchlist">Watchlist</button>
+    <button class="tab-btn" id="tab-btn-intraday">Intraday</button>
+    <button class="tab-btn" id="tab-btn-scanner">Scanner</button>
+    <button class="tab-btn" id="tab-btn-portfolio">Portfolio</button>
+    <button class="tab-btn" id="tab-btn-history">History</button>
+    <button class="tab-btn" id="tab-btn-chat">AI Chat</button>
+  </div>
+
+  <!-- Watchlist Tab Panel -->
+  <div id="panel-watchlist" class="tab-panel active">
+    <!-- Search segment -->
+    <div class="quick-search-box">
+      <div class="search-inline-container" style="margin: 0;">
+        <input type="text" id="popup-search-input" placeholder="e.g. RELIANCE, TCS, AAPL" class="search-inline-input" style="padding: 8px 10px;">
+        <button id="popup-search-btn" class="search-inline-btn" style="padding: 8px 14px;">Scan</button>
+      </div>
+    </div>
+    
+    <!-- Watchlist list -->
+    <div>
+      <div class="watchlist-title">Synced Watchlist</div>
+      <div id="watchlist-container" class="watchlist-list">
+        <div class="loading-pulse" style="height: 100px;">
+          <div class="loading-spinner" style="width:20px; height:20px; border-width:2px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Scanner Tab Panel -->
+  <div id="panel-scanner" class="tab-panel">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+      <span style="font-size:11px; color:var(--text-slate-dim);">Top Indian Stocks Screen</span>
+      <div style="display:flex; gap:6px;">
+        <button id="scanner-refresh-btn" class="primary" style="padding:6px 12px; font-size:11px; font-weight:700;">Scan Now</button>
+        <button id="scanner-auto-btn" class="secondary" style="padding:6px 8px; font-size:11px; font-weight:700;" title="Auto Refresh Scanner">Auto: OFF</button>
+      </div>
+    </div>
+    
+    <!-- Scanner interactive filter chips -->
+    <div class="chat-chips-container" id="scanner-filter-chips" style="margin-bottom: 12px; display: none;">
+      <span class="chat-chip active" data-filter="all">All</span>
+      <span class="chat-chip" data-filter="best">🏆 Best Picks</span>
+      <span class="chat-chip" data-filter="under100">🪙 Under ₹100</span>
+      <span class="chat-chip" data-filter="short">⚡ Short Term</span>
+      <span class="chat-chip" data-filter="long">📈 Long Term</span>
+      <span class="chat-chip" data-filter="gainer">🚀 Gainers</span>
+      <span class="chat-chip" data-filter="loser">📉 Losers</span>
+    </div>
+
+    <div id="scanner-container" class="scanner-grid">
+      <div class="empty-state">Click 'Scan Now' to run real-time market analysis.</div>
+    </div>
+  </div>
+
+  <!-- Intraday Tab Panel -->
+  <div id="panel-intraday" class="tab-panel">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+      <span style="font-size:11px; color:var(--text-slate-dim);">Live Intraday Assist</span>
+      <div style="display:flex; gap:6px;">
+        <button id="intraday-refresh-btn" class="primary" style="padding:6px 12px; font-size:11px; font-weight:700;">Refresh</button>
+        <button id="intraday-auto-btn" class="secondary" style="padding:6px 8px; font-size:11px; font-weight:700;" title="Auto Refresh Intraday">Auto: OFF</button>
+      </div>
+    </div>
+    
+    <div class="quick-search-box">
+      <div class="search-inline-container" style="margin: 0;">
+        <input type="text" id="intraday-search-input" placeholder="e.g. RELIANCE, AAPL" class="search-inline-input" style="padding: 8px 10px;">
+        <button id="intraday-search-btn" class="search-inline-btn" style="padding: 8px 14px;">Analyze</button>
+      </div>
+    </div>
+
+    <div id="intraday-container" class="scanner-grid">
+      <div class="empty-state">Enter a ticker to see live intraday VWAP, Stochastics, and momentum.</div>
+    </div>
+  </div>
+
+  <!-- Portfolio Tab Panel -->
+  <div id="panel-portfolio" class="tab-panel">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+      <span style="font-size:11px; color:var(--text-slate-dim);">Position Tracker</span>
+    </div>
+    <div id="portfolio-summary" class="portfolio-summary-card">
+      <div>
+        <div class="portfolio-total-label">Total Value</div>
+        <div class="portfolio-total-value" id="portfolio-total-value">--</div>
+      </div>
+      <div>
+        <div class="portfolio-total-label">Day P&L</div>
+        <div class="portfolio-total-value" id="portfolio-total-pnl" style="font-size:14px;">--</div>
+      </div>
+    </div>
+    <!-- Search-to-Add Portfolio Asset -->
+    <div class="portfolio-search-box" style="margin-bottom: 12px;">
+      <div class="search-inline-container" style="margin-bottom: 8px;">
+        <input type="text" id="portfolio-search-input" placeholder="Search ticker to add (e.g. AAPL, RELIANCE)" class="search-inline-input" style="padding: 7px 10px; font-size: 12px;">
+        <button id="portfolio-search-btn" class="search-inline-btn" style="padding: 7px 12px; font-size: 12px;">Search</button>
+      </div>
+      <div id="portfolio-search-loading" class="loading-pulse" style="display: none; padding: 4px; flex-direction: row; gap: 8px; justify-content: center; align-items: center;">
+        <div class="loading-spinner" style="width: 12px; height: 12px; border-width: 1.5px; margin: 0;"></div>
+        <span style="font-size: 11px; color: var(--text-slate-dim);">Searching ticker...</span>
+      </div>
+      <div id="portfolio-search-error" style="display: none; color: var(--accent-red); font-size: 11px; margin-bottom: 8px; text-align: center; font-weight: 500;"></div>
+    </div>
+
+    <!-- Quick Add Confirmation Card -->
+    <div id="portfolio-quick-add-card" class="glass-card" style="display: none; padding: 10px; margin-bottom: 12px; border-color: rgba(2, 132, 199, 0.3); border-style: dashed; animation: fadeIn 0.3s ease;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <span id="quick-add-ticker" style="font-family: var(--font-display); font-weight: 700; font-size: 12px; color: var(--text-slate-light);">TICKER</span>
+        <span id="quick-add-current-price" style="font-size: 11px; font-weight: 700; color: var(--accent-cyan-glow);">Price</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1.2fr auto; gap: 5px; align-items: center;">
+        <input type="number" id="quick-add-qty" placeholder="Qty" min="1" value="1" style="padding: 4px 6px; font-size: 11px; height: 26px;">
+        <input type="number" id="quick-add-price" placeholder="Price" step="0.01" style="padding: 4px 6px; font-size: 11px; height: 26px;">
+        <button id="quick-add-confirm-btn" class="primary" style="padding: 4px 10px; font-size: 11px; font-weight: 700; height: 26px;">+ Add</button>
+      </div>
+    </div>
+    <div id="portfolio-container" class="watchlist-list">
+      <div class="empty-state">No positions. Add your first holding above.</div>
+    </div>
+
+    <!-- Portfolio Risk Warnings -->
+    <div style="margin-top: 16px; border-top: 1px solid var(--border-glass); padding-top: 12px; display: none;" id="portfolio-alerts-section">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+        <span style="font-size:11px; color:var(--text-slate-dim); text-transform:uppercase; letter-spacing:1px; font-weight:600;">⚠️ Risk Warnings</span>
+        <button id="portfolio-alerts-clear-btn" class="secondary" style="padding:2px 6px; font-size:9px;">Clear</button>
+      </div>
+      <div id="portfolio-alerts-container" class="watchlist-list"></div>
+    </div>
+
+    <!-- Custom Price Alerts -->
+    <div style="margin-top: 16px; border-top: 1px solid var(--border-glass); padding-top: 12px;">
+      <div style="font-size:11px; color:var(--text-slate-dim); text-transform:uppercase; letter-spacing:1px; font-weight:600; margin-bottom: 8px;">🔔 Custom Price Alerts</div>
+      <div class="portfolio-add-form" id="price-alert-add-form" style="grid-template-columns: 1.5fr 1fr 1.5fr auto;">
+        <input type="text" id="alert-ticker-input" placeholder="Ticker">
+        <select id="alert-condition-select" style="padding: 4px; font-size: 11px;">
+          <option value="ABOVE">Above</option>
+          <option value="BELOW">Below</option>
+        </select>
+        <input type="number" id="alert-price-input" placeholder="Price" step="0.01">
+        <button id="alert-add-btn" class="primary" style="font-size:11px;">+Alert</button>
+      </div>
+      <div id="price-alerts-container" class="watchlist-list" style="margin-top: 8px;"></div>
+    </div>
+  </div>
+
+  <!-- History Tab Panel -->
+  <div id="panel-history" class="tab-panel">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+      <span style="font-size:11px; color:var(--text-slate-dim);">Recent Scan Logs</span>
+      <button id="history-clear-btn" class="secondary" style="padding:6px 12px; font-size:11px; font-weight:700;">Clear All</button>
+    </div>
+    <div id="history-container" class="watchlist-list">
+      <div class="empty-state">No scan history recorded.</div>
+    </div>
+  </div>
+
+  <!-- AI Chat Tab Panel -->
+  <div id="panel-chat" class="tab-panel">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+      <span style="font-size:11px; color:var(--text-slate-dim);">ALPHA AI Market Advisor</span>
+      <button id="chat-clear-btn" class="secondary" style="padding:6px 12px; font-size:11px; font-weight:700;">Clear Chat</button>
+    </div>
+    <div class="chat-container">
+      <div id="chat-messages" class="chat-messages">
+        <!-- Messages render here -->
+      </div>
+      
+      <!-- Suggestion chips container -->
+      <div class="chat-chips-container" id="chat-chips-container">
+        <span class="chat-chip" data-query="Suggest top bullish stocks from my watchlist">🔍 Watchlist Picks</span>
+        <span class="chat-chip" data-query="Suggest high-growth stocks in IT/Banking sectors under ₹1000">📈 Sector Trends</span>
+        <span class="chat-chip" data-query="Which stock shows the strongest buy momentum and why?">🔥 Best Momentum</span>
+        <span class="chat-chip" data-query="Give me a simple option strategy recommendation matching Speculative Momentum">📊 Option Strategy</span>
+      </div>
+
+      <div class="chat-input-area">
+        <button id="chat-mic-btn" class="secondary mic-btn" title="Voice Input" style="padding: 6px 10px; border-radius: 8px;">🎤</button>
+        <input type="text" id="chat-user-input" placeholder="Ask about stocks..." class="search-inline-input">
+        <button id="chat-send-btn" class="search-inline-btn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Realtime Inline analysis panel in popup (shared overlay) -->
+  <div id="popup-analysis-panel" class="analysis-container">
+    <div class="analysis-close-btn" id="close-analysis-btn">Close &times;</div>
+    <h3 style="font-size: 14px; margin-bottom: 12px; color: var(--text-slate-light);" id="analysis-ticker-title">Analysis</h3>
+    
+    <div id="analysis-body">
+      <!-- Data renders here -->
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

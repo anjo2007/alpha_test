@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALPHA // ANALYTICAL REPORT</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Scoped layout styles */
+    .report-main-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 2fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 900px) {
+      .report-main-grid {
+        grid-template-columns: 1fr;
+      }
+      #report-bottom-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+      }
+    }
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 280px;
+    }
+    #report-canvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+    }
+    .badge-large {
+      font-size: 14px;
+      padding: 6px 14px;
+      border-radius: 50px;
+    }
+    .report-details-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="report-wrapper">
+    <!-- Header -->
+    <header class="report-header-section">
+      <div class="report-title-group">
+        <img src="icon.png" alt="ALPHA" style="width: 32px; height: 32px; border-radius: 6px;">
+        <div>
+          <h1 style="font-size: 24px; letter-spacing: 2px; color: var(--text-slate-light); margin:0;">ALPHA // REPORT</h1>
+          <span style="font-size: 11px; color: var(--text-slate-dim); letter-spacing: 1px; text-transform: uppercase;">Quant-Semantic Intelligence Ledger</span>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="search-inline-container" style="margin-bottom: 0;">
+          <input type="text" id="report-search-input" placeholder="Enter Ticker (e.g. RELIANCE)" class="search-inline-input">
+          <button id="report-search-btn" class="search-inline-btn">Analyze</button>
+        </div>
+        <button class="theme-toggle-btn" id="report-theme-toggle" title="Toggle Theme" style="font-size: 18px;">☀️</button>
+        <button id="report-csv-btn" class="secondary btn-export" style="padding: 10px 16px;">📥 Export CSV</button>
+        <button id="report-print-btn" class="secondary btn-print" style="padding: 10px 16px;">🖨️ Print Report</button>
+      </div>
+    </header>
+
+    <!-- Error container -->
+    <div id="report-error" class="glass-card" style="display: none; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); padding: 24px; text-align: center;">
+      <h2 style="color: var(--accent-red); margin-bottom: 8px;">Analysis Aborted</h2>
+      <p id="report-error-msg" style="color: var(--text-slate-dim); margin-bottom: 16px;"></p>
+      <button id="report-error-retry" class="primary" style="padding: 8px 16px;">Retry Manual Search</button>
+    </div>
+
+    <!-- Loading container -->
+    <div id="report-loading" class="loading-pulse" style="height: 300px; display: none;">
+      <div class="loading-spinner"></div>
+      <div id="report-loading-text" style="font-size: 14px; font-weight: 500;">Synthesizing quant-semantic ledger streams...</div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="report-content" style="display: none; animation: fadeIn 0.4s ease;">
+      <!-- Title & Price Block -->
+      <div class="glass-card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding: 24px;">
+        <div>
+          <h2 id="report-asset-name" style="font-size: 28px; color: var(--text-slate-light); font-weight: 700; margin:0;">TICKER</h2>
+          <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 4px;">
+            <span id="report-spot-price" style="font-size: 22px; font-weight: 700; color: var(--text-slate-light);">₹0.00</span>
+            <span id="report-price-change" style="font-size: 14px; font-weight: 600;">+0.00%</span>
+          </div>
+        </div>
+        <div id="report-sentiment-badge">
+          <!-- Render Badge -->
+        </div>
+      </div>
+
+      <!-- Main Layout Grid -->
+      <div class="report-main-grid">
+        
+        <!-- Left Column: F-Score Gauge & Quant Stats -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <!-- Gauge Card -->
+          <div class="glass-card" style="text-align: center; padding: 32px 24px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <span class="report-card-title" style="width: 100%;">Composite F-Score Indicator</span>
+            <div class="fscore-gauge" style="width: 140px; height: 140px; margin-top: 16px;">
+              <svg viewBox="0 0 120 120">
+                <circle class="bg-circle" cx="60" cy="60" r="48"></circle>
+                <circle id="gauge-circle" class="progress-circle" cx="60" cy="60" r="48" style="stroke-width: 8; stroke-dasharray: 301.6; stroke-dashoffset: 301.6;"></circle>
+              </svg>
+              <div id="gauge-value" class="fscore-value" style="font-size: 32px;">0.00</div>
+            </div>
+            <div id="gauge-status" style="margin-top: 16px; font-weight: 700; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase;">
+              CONSOLIDATION
+            </div>
+            <div style="width: 100%; border-top: 1px dashed var(--border-glass); padding-top: 16px; margin-top: 16px; display: flex; flex-direction: column; gap: 8px; text-align: left;">
+              <div style="font-size: 10px; color: var(--text-slate-dim); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Pillar Scores</div>
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size: 11px; margin-bottom: 2px;">
+                  <span>Technical Quant (<span id="weight-q">30%</span>)</span>
+                  <strong id="score-q" style="color:var(--accent-cyan-glow);">0.0/10</strong>
+                </div>
+                <div style="height: 4px; background: var(--bg-circle-track); border-radius: 2px; overflow: hidden;">
+                  <div id="progress-q" style="height: 100%; width: 0%; background: var(--accent-cyan-glow); transition: width 0.8s ease;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size: 11px; margin-bottom: 2px;">
+                  <span>Fundamentals (<span id="weight-f">30%</span>)</span>
+                  <strong id="score-f" style="color:var(--accent-green);">0.0/10</strong>
+                </div>
+                <div style="height: 4px; background: var(--bg-circle-track); border-radius: 2px; overflow: hidden;">
+                  <div id="progress-f" style="height: 100%; width: 0%; background: var(--accent-green); transition: width 0.8s ease;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size: 11px; margin-bottom: 2px;">
+                  <span>News Sentiment (<span id="weight-s">20%</span>)</span>
+                  <strong id="score-s" style="color:var(--accent-amber);">0.0/10</strong>
+                </div>
+                <div style="height: 4px; background: var(--bg-circle-track); border-radius: 2px; overflow: hidden;">
+                  <div id="progress-s" style="height: 100%; width: 0%; background: var(--accent-amber); transition: width 0.8s ease;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size: 11px; margin-bottom: 2px;">
+                  <span>Market & Macro (<span id="weight-m">20%</span>)</span>
+                  <strong id="score-m" style="color:var(--accent-magenta-neon);">0.0/10</strong>
+                </div>
+                <div style="height: 4px; background: var(--bg-circle-track); border-radius: 2px; overflow: hidden;">
+                  <div id="progress-m" style="height: 100%; width: 0%; background: var(--accent-magenta-neon); transition: width 0.8s ease;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quant Parameters -->
+          <div class="glass-card" style="padding: 24px;">
+            <span class="report-card-title">Quantitative Analytics</span>
+            <div class="report-details-grid" style="margin-top: 12px;">
+              <div class="metric-row">
+                <span class="metric-label">SMA(20) Position</span>
+                <span id="report-sma20" class="metric-value">₹0.00</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">SMA(50) Position</span>
+                <span id="report-sma50" class="metric-value">₹0.00</span>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Trend Alignment</span>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span id="report-trend-align" class="metric-value" style="font-weight: 700;">Neutral</span>
+                  <span id="report-crossover-badge" class="badge" style="display: none; padding: 2px 6px; font-size: 9px;"></span>
+                </div>
+              </div>
+              <div class="metric-row">
+                <span class="metric-label">Daily Prev Close</span>
+                <span id="report-prev-close" class="metric-value">₹0.00</span>
+              </div>
+              <div class="metric-row" style="border-bottom: none;">
+                <span class="metric-label">Self-Correction Weight Bias</span>
+                <span id="report-correction" class="metric-value">0.0000</span>
+              </div>
+              <!-- Pivot Points Section -->
+              <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-glass);">
+                <div style="font-size: 11px; color: var(--text-slate-dim); margin-bottom: 8px; font-weight: 600; text-transform: uppercase;">Standard Pivot Points</div>
+                <div class="grid-3" style="text-align: center; font-size: 11px; margin-bottom: 8px; gap: 6px;">
+                  <div>
+                    <div style="color: var(--text-slate-dim); font-size: 9px;">Support 1 (S1)</div>
+                    <div id="pivot-s1" style="font-weight: 700; color: var(--accent-red); margin-top: 2px;">N/A</div>
+                  </div>
+                  <div>
+                    <div style="color: var(--text-slate-dim); font-size: 9px;">Pivot Point (PP)</div>
+                    <div id="pivot-pp" style="font-weight: 700; color: var(--text-slate-light); margin-top: 2px;">N/A</div>
+                  </div>
+                  <div>
+                    <div style="color: var(--text-slate-dim); font-size: 9px;">Resistance 1 (R1)</div>
+                    <div id="pivot-r1" style="font-weight: 700; color: var(--accent-green); margin-top: 2px;">N/A</div>
+                  </div>
+                </div>
+                <div class="grid-2" style="text-align: center; font-size: 11px; border-top: 1px dashed var(--border-glass); padding-top: 8px; gap: 6px;">
+                  <div>
+                    <div style="color: var(--text-slate-dim); font-size: 9px;">Support 2 (S2)</div>
+                    <div id="pivot-s2" style="font-weight: 700; color: var(--accent-red); margin-top: 2px;">N/A</div>
+                  </div>
+                  <div>
+                    <div style="color: var(--text-slate-dim); font-size: 9px;">Resistance 2 (R2)</div>
+                    <div id="pivot-r2" style="font-weight: 700; color: var(--accent-green); margin-top: 2px;">N/A</div>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+          <!-- Fundamental Health Card -->
+          <div class="glass-card" style="padding: 24px;" id="report-fundamental-card">
+            <span class="report-card-title">Fundamental Valuation & Health</span>
+            <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 10px;">
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                <div style="background: var(--bg-input); padding: 8px; border-radius: 6px; border: 1px solid var(--border-glass);">
+                  <div style="font-size: 10px; color: var(--text-slate-dim);">Trailing P/E</div>
+                  <div id="fundamental-pe" style="font-size: 14px; font-weight: 700; color: var(--text-slate-light); margin-top: 2px;">N/A</div>
+                </div>
+                <div style="background: var(--bg-input); padding: 8px; border-radius: 6px; border: 1px solid var(--border-glass);">
+                  <div style="font-size: 10px; color: var(--text-slate-dim);">Price / Book (P/B)</div>
+                  <div id="fundamental-pb" style="font-size: 14px; font-weight: 700; color: var(--text-slate-light); margin-top: 2px;">N/A</div>
+                </div>
+                <div style="background: var(--bg-input); padding: 8px; border-radius: 6px; border: 1px solid var(--border-glass);">
+                  <div style="font-size: 10px; color: var(--text-slate-dim);">Debt / Equity</div>
+                  <div id="fundamental-de" style="font-size: 14px; font-weight: 700; color: var(--text-slate-light); margin-top: 2px;">N/A</div>
+                </div>
+                <div style="background: var(--bg-input); padding: 8px; border-radius: 6px; border: 1px solid var(--border-glass);">
+                  <div style="font-size: 10px; color: var(--text-slate-dim);">Return on Equity (ROE)</div>
+                  <div id="fundamental-roe" style="font-size: 14px; font-weight: 700; color: var(--text-slate-light); margin-top: 2px;">N/A</div>
+                </div>
+                <div style="background: var(--bg-input); padding: 8px; border-radius: 6px; border: 1px solid var(--border-glass);">
+                  <div style="font-size: 10px; color: var(--text-slate-dim);">Revenue Growth (YoY)</div>
+                  <div id="fundamental-revenue-growth" style="font-size: 14px; font-weight: 700; color: var(--text-slate-light); margin-top: 2px;">N/A</div>
+                </div>
+                <div style="background: var(--bg-input); padding: 8px; border-radius: 6px; border: 1px solid var(--border-glass);">
+                  <div style="font-size: 10px; color: var(--text-slate-dim);">Operating Margin</div>
+                  <div id="fundamental-margin" style="font-size: 14px; font-weight: 700; color: var(--text-slate-light); margin-top: 2px;">N/A</div>
+                </div>
+              </div>
+              <div style="background: var(--bg-input); padding: 10px; border-radius: 6px; border: 1px solid var(--border-glass); margin-top: 4px;">
+                <div style="font-size: 9px; color: var(--text-slate-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;">Semantic Financial Analysis Consensus</div>
+                <div id="fundamental-summary-txt" style="font-size: 12px; color: var(--text-slate-light); line-height: 1.4; margin-top: 4px; font-style: italic;">
+                  No semantic fundamentals health summary.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+        <!-- Right Column: Chart & Strategy -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <!-- Price Chart -->
+          <div class="glass-card" style="padding: 24px; position: relative;">
+            <span class="report-card-title">20-Day Spot Price Trend Visualizer</span>
+            <div class="chart-container" style="margin-top: 16px; position: relative;">
+              <canvas id="report-canvas" width="500" height="280"></canvas>
+              <div id="chart-tooltip" style="position: absolute; display: none; pointer-events: none; background: var(--bg-glass-card); border: 1px solid var(--border-glass); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); padding: 8px 12px; border-radius: 8px; font-size: 11px; color: var(--text-slate-light); box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 100;"></div>
+            </div>
+          </div>
+
+          <!-- Technical Indicators & 52-Week Range Card -->
+          <div class="glass-card" style="padding: 24px;">
+            <span class="report-card-title">Technical Indicators & Market Volatility</span>
+            <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 16px;">
+              <!-- 52-Week Range Bar -->
+              <div>
+                <div style="font-size: 11px; color: var(--text-slate-dim); margin-bottom: 6px; font-weight: 500; text-transform: uppercase;">52-Week Range</div>
+                <div class="range-bar-container">
+                  <div class="range-bar-labels" style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-slate-dim); margin-bottom: 4px;">
+                    <span id="report-52w-low">N/A</span>
+                    <span id="report-52w-high">N/A</span>
+                  </div>
+                  <div class="range-bar-track" style="position: relative; height: 6px; background: var(--bg-circle-track); border-radius: 3px; overflow: visible;">
+                    <div class="range-bar-fill" style="position: absolute; height: 100%; width: 100%; left: 0; top: 0; background: linear-gradient(90deg, var(--accent-red), var(--accent-amber), var(--accent-green)); border-radius: 3px;"></div>
+                    <div id="report-52w-marker" class="range-bar-marker" style="position: absolute; width: 12px; height: 12px; background: var(--accent-cyan-glow); border-radius: 50%; top: -3px; transform: translateX(-50%); transition: left 0.3s ease; box-shadow: 0 0 8px var(--accent-cyan-glow);"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Indicators Grid -->
+              <div class="grid-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: center; border-top: 1px solid var(--border-glass); padding-top: 16px;">
+                <div>
+                  <div style="font-size: 10px; color: var(--text-slate-dim); font-weight: 500;">RSI (14)</div>
+                  <div id="report-rsi" class="indicator-badge" style="margin-top: 6px; display: inline-flex; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700;">N/A</div>
+                </div>
+                <div>
+                  <div style="font-size: 10px; color: var(--text-slate-dim); font-weight: 500;">MACD Hist</div>
+                  <div id="report-macd" class="indicator-badge" style="margin-top: 6px; display: inline-flex; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700;">N/A</div>
+                </div>
+                <div>
+                  <div style="font-size: 10px; color: var(--text-slate-dim); font-weight: 500;">Volume Ratio</div>
+                  <div id="report-volume" class="indicator-badge" style="margin-top: 6px; display: inline-flex; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700;">N/A</div>
+                </div>
+              </div>
+
+              <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; border-top: 1px dashed var(--border-glass); padding-top: 12px;">
+                <div>
+                  <div style="font-size: 10px; color: var(--text-slate-dim);">Bollinger Bands (%B)</div>
+                  <div id="report-bollinger" style="font-weight: 600; font-size: 13px; color: var(--text-slate-light); margin-top: 2px;">N/A</div>
+                </div>
+                <div>
+                  <div style="font-size: 10px; color: var(--text-slate-dim);">ATR (14-Period)</div>
+                  <div id="report-atr" style="font-weight: 600; font-size: 13px; color: var(--text-slate-light); margin-top: 2px;">N/A</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Market & Macro Environment -->
+          <div class="glass-card" style="padding: 24px;" id="report-market-card">
+            <span class="report-card-title">Market Sentiment & Macro Environment</span>
+            <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-input); padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass);">
+                <div>
+                  <div style="font-size: 9px; color: var(--text-slate-dim); font-weight: 600; text-transform: uppercase;">Benchmark Index (<span id="market-index-ticker">Nifty 50</span>)</div>
+                  <div id="market-index-price" style="font-size: 16px; font-weight: 700; color: var(--text-slate-light); margin-top: 2px;">N/A</div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-size: 9px; color: var(--text-slate-dim); font-weight: 600; text-transform: uppercase;">Daily Change</div>
+                  <div id="market-index-change" style="font-size: 14px; font-weight: 700; margin-top: 2px;">+0.00%</div>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-input); padding: 10px; border-radius: 8px; border: 1px solid var(--border-glass);">
+                <div>
+                  <div style="font-size: 9px; color: var(--text-slate-dim); font-weight: 600; text-transform: uppercase;">Volatility Index (VIX)</div>
+                  <div id="market-vix-price" style="font-size: 16px; font-weight: 700; color: var(--text-slate-light); margin-top: 2px;">N/A</div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-size: 9px; color: var(--text-slate-dim); font-weight: 600; text-transform: uppercase;">Market Volatility State</div>
+                  <div id="market-vix-status" class="badge" style="margin-top: 2px; font-size: 9px; padding: 2px 6px;">Neutral</div>
+                </div>
+              </div>
+              <div style="background: var(--bg-input); padding: 10px; border-radius: 6px; border: 1px solid var(--border-glass); margin-top: 4px;">
+                <div style="font-size: 9px; color: var(--text-slate-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;">Macro Climate Commentary</div>
+                <div id="market-summary-txt" style="font-size: 12px; color: var(--text-slate-light); line-height: 1.4; margin-top: 4px; font-style: italic;">
+                  No macro climate commentary synthesized.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Strategy Matrix -->
+          <div class="glass-card" style="padding: 24px;">
+            <span class="report-card-title">Algorithmic Options & Trading Strategy</span>
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px;">
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-glass); padding-bottom: 8px;">
+                <span style="font-size: 13px; color: var(--text-slate-dim);">Best Recommendation:</span>
+                <span id="report-best-strategy" style="font-weight: 700; color: var(--accent-cyan-glow);">BUY</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-glass); padding-bottom: 8px;">
+                <span style="font-size: 13px; color: var(--text-slate-dim);">5-Day Target Forecast:</span>
+                <span id="report-target-price" style="font-weight: 700; color: var(--accent-cyan-glow);">₹0.00</span>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="font-size: 13px; color: var(--text-slate-dim);">Prediction Confidence:</span>
+                <span id="report-confidence" style="font-weight: 700; color: var(--accent-cyan-glow);">0%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tactical Timing Guidance -->
+          <div class="timing-advice-card" id="report-timing-card" style="margin-top: 0;">
+            <div class="timing-header">
+              <span class="timing-title">Tactical Entry/Exit Guidance</span>
+              <span class="timing-badge-action hold" id="report-timing-action">HOLD / WATCH</span>
+            </div>
+            <div class="timing-range-label">Optimal Action Range</div>
+            <div class="timing-range-value" id="report-timing-range">Consolidation Range</div>
+            <div class="timing-rationale" id="report-timing-rationale">Indicators are in a neutral zone. Maintain existing positions and monitor key levels.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Grid: News feed, Semantic news + Citations -->
+      <div style="display: grid; grid-template-columns: 1.5fr 1.5fr 1fr; gap: 24px; margin-bottom: 24px;" id="report-bottom-grid">
+        <!-- Catalyst News Feed -->
+        <div class="glass-card" style="padding: 24px;">
+          <span class="report-card-title">Catalyst News Feed</span>
+          <div id="report-news-feed" style="margin-top: 16px; display:flex; flex-direction:column; gap:12px;">
+            <!-- News list renders here -->
+          </div>
+        </div>
+
+        <!-- Semantic news -->
+        <div class="glass-card" style="padding: 24px;">
+          <span class="report-card-title">Semantic Summary Analysis</span>
+          <div id="report-semantic-summary" style="font-size: 14px; line-height: 1.7; color: var(--text-slate-light); margin-top: 16px;">
+            <!-- Summaries render here -->
+          </div>
+        </div>
+
+        <!-- Citations list -->
+        <div class="glass-card" style="padding: 24px;">
+          <span class="report-card-title">Grounding Sources</span>
+          <div id="report-citations-container" class="citations-list" style="margin-top: 16px;">
+            <!-- Links render here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="report.js"></script>
+</body>
+</html>

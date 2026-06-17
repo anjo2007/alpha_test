@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALPHA // VOICE INTEGRATION</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      background-color: var(--bg-obsidian-deep);
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .wrapper {
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+    .brand-header h1 {
+      font-size: 26px;
+      letter-spacing: 3px;
+      color: var(--text-slate-light);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .brand-header p {
+      color: var(--text-slate-dim);
+      font-size: 12px;
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+    }
+    .status-icon {
+      font-size: 48px;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px auto;
+      transition: var(--transition-smooth);
+    }
+    .status-icon.active {
+      border-color: var(--accent-cyan-glow);
+      box-shadow: 0 0 20px rgba(0, 255, 224, 0.25);
+      color: var(--accent-cyan-glow);
+    }
+    .status-icon.listening {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: var(--accent-red);
+      box-shadow: 0 0 20px rgba(255, 23, 68, 0.3);
+      color: var(--accent-red);
+      animation: pulse-red 1.2s infinite alternate;
+    }
+    @keyframes pulse-red {
+      from { transform: scale(1); }
+      to { transform: scale(1.08); }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="brand-header">
+      <h1>ALPHA // VOICE</h1>
+      <p>MICROPHONE PERMISSION MANAGER</p>
+    </div>
+
+    <div class="glass-container" style="padding: 32px 24px;">
+      <div id="mic-icon" class="status-icon">🎙️</div>
+      <h2 id="status-title" style="font-size: 18px; margin-bottom: 12px; color: var(--text-slate-light);">Permission Required</h2>
+      <p id="status-desc" style="color: var(--text-slate-dim); font-size: 13px; line-height: 1.6; margin-bottom: 24px;">
+        To dictate text in the ALPHA AI Chatbot, Chrome requires microphone access. Click the button below to authorize permissions for the extension.
+      </p>
+      
+      <button id="grant-btn" class="primary" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 700;">
+        Enable Microphone Access
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const grantBtn = document.getElementById("grant-btn");
+    const statusIcon = document.getElementById("mic-icon");
+    const statusTitle = document.getElementById("status-title");
+    const statusDesc = document.getElementById("status-desc");
+
+    // Check if permission is already granted
+    navigator.permissions.query({ name: 'microphone' }).then((result) => {
+      if (result.state === 'granted') {
+        showSuccessState();
+      }
+      result.onchange = () => {
+        if (result.state === 'granted') {
+          showSuccessState();
+        }
+      };
+    });
+
+    grantBtn.addEventListener("click", () => {
+      statusIcon.classList.add("listening");
+      statusTitle.textContent = "Requesting Access...";
+      statusDesc.textContent = "Please click 'Allow' in the browser permission prompt appearing at the top left of your screen.";
+
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then((stream) => {
+          // Stop track immediately to release mic
+          stream.getTracks().forEach(track => track.stop());
+          showSuccessState();
+        })
+        .catch((err) => {
+          console.error("Microphone Grant Error:", err);
+          statusIcon.classList.remove("listening");
+          statusIcon.classList.add("active");
+          statusIcon.textContent = "⚠️";
+          statusTitle.textContent = "Access Blocked";
+          statusTitle.style.color = "var(--accent-red)";
+          statusDesc.textContent = "Microphone access request was denied. Please click the video/camera icon in your address bar, switch to 'Always allow', and reload this page to retry.";
+          grantBtn.textContent = "Retry Access Request";
+        });
+    });
+
+    function showSuccessState() {
+      statusIcon.className = "status-icon active";
+      statusIcon.textContent = "✅";
+      statusTitle.textContent = "Permission Enabled";
+      statusTitle.style.color = "var(--accent-green)";
+      statusDesc.textContent = "ALPHA Terminal voice recognition is now authorized. You can close this tab and speak directly in the extension chat popup or webpage sidebar.";
+      grantBtn.textContent = "Close Tab";
+      grantBtn.className = "secondary";
+      grantBtn.onclick = () => window.close();
+    }
+  </script>
+</body>
+</html>

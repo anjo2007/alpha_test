@@ -1,0 +1,32 @@
+name: Daily Market Alerts
+
+on:
+  schedule:
+    # Runs at 11:30 PM UTC every weekday (roughly 5:00 AM IST next day)
+    - cron: '30 23 * * 1-5'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  send-alerts:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f scripts/requirements.txt ]; then pip install -r scripts/requirements.txt; fi
+        
+    - name: Run Market Alerts Script
+      env:
+        # Requires creating a GitHub Secret named EMAIL_APP_PASSWORD
+        EMAIL_APP_PASSWORD: ${{ secrets.EMAIL_APP_PASSWORD }}
+      run: python scripts/send_email_alerts.py

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ALPHA // CONFIGURATION TERMINAL</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      background-color: var(--bg-obsidian-deep);
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      transition: background 0.3s ease;
+    }
+    .settings-wrapper {
+      max-width: 650px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .brand-header {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .brand-header h1 {
+      font-size: 28px;
+      letter-spacing: 4px;
+      color: var(--text-slate-light);
+      margin-bottom: 4px;
+    }
+    .brand-header p {
+      color: var(--text-slate-dim);
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+    .settings-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    label {
+      font-family: var(--font-display);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-slate-dim);
+      font-weight: 600;
+    }
+    .desc {
+      font-size: 12px;
+      color: var(--text-slate-dim);
+      margin-top: 2px;
+    }
+    .status-toast {
+      display: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      animation: fadeIn 0.3s ease;
+    }
+    .toast-success {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-green);
+    }
+    .toast-error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--accent-red);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="settings-wrapper">
+    <div class="brand-header">
+      <h1>ALPHA // SYSTEM</h1>
+      <p>MULTI-MODAL QUANT-SEMANTIC INTEGRATION</p>
+    </div>
+
+    <!-- Storage notification toast -->
+    <div id="status-toast" class="status-toast"></div>
+
+    <!-- Core settings -->
+    <div class="glass-container" style="padding: 24px;">
+      <h2 style="font-size: 16px; margin-bottom: 20px; border-bottom: 1px solid var(--border-glass); padding-bottom: 8px; color: var(--text-slate-light);">
+        Credential Orchestration
+      </h2>
+      <div class="settings-section">
+        <div class="form-group">
+          <label for="gemini-key">Gemini API Key</label>
+          <input type="password" id="gemini-key" placeholder="Enter Gemini API Key (AI Grounding)">
+          <span class="desc">Acquired from Google AI Studio. Required for search-grounded semantic predictions.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="gemini-model">Gemini Model Choice</label>
+          <select id="gemini-model">
+            <option value="gemini-3.5-flash">Gemini 3.5 Flash (Improved & Cost-Efficient)</option>
+            <option value="gemini-2.5-flash">Gemini 2.5 Flash (Fast, Recommended)</option>
+            <option value="gemini-2.5-pro">Gemini 2.5 Pro (Deep Analytic Reasoning)</option>
+            <option value="gemini-1.5-flash">Gemini 1.5 Flash (Legacy Standard)</option>
+          </select>
+          <span class="desc">Select model class to balance response latency and reasoning accuracy.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="alert-email">Recipient Gmail Address</label>
+          <input type="email" id="alert-email" placeholder="e.g. devon.hale@gmail.com">
+          <span class="desc">The target inbox for automated breakthrough alerts.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="gmail-token">OAuth2 / Access Token Override (Optional)</label>
+          <input type="password" id="gmail-token" placeholder="Optional Access Token">
+          <span class="desc">Manually input a Google API Bearer Access Token if chrome.identity is not configured.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Interests and Preferences -->
+    <div class="glass-container" style="padding: 24px;">
+      <h2 style="font-size: 16px; margin-bottom: 20px; border-bottom: 1px solid var(--border-glass); padding-bottom: 8px; color: var(--text-slate-light);">
+        User Interest & System Theme Settings
+      </h2>
+      <div class="settings-section">
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="investment-style">Investment Profile Strategy</label>
+            <select id="investment-style">
+              <option value="Growth">Growth Focus</option>
+              <option value="Value">Value Archetype</option>
+              <option value="Speculative">Speculative Momentum</option>
+              <option value="Income">Income (Yield/Covered Calls)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="system-theme">Default UI Theme</label>
+            <select id="system-theme">
+              <option value="light">Light Ambient (Default)</option>
+              <option value="dark">Dark Ambient</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="default-exchange">Default Market Exchange</label>
+            <select id="default-exchange">
+              <option value="NSE">Indian NSE (.NS)</option>
+              <option value="BSE">Indian BSE (.BO)</option>
+              <option value="US">US Markets (None)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="scanner-tickers">Market Scanner Tickers</label>
+            <input type="text" id="scanner-tickers" placeholder="e.g. RELIANCE.NS, TCS.NS, HDFCBANK.NS">
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="include-trending">Include Dynamic Trending Tickers</label>
+            <select id="include-trending">
+              <option value="true">Yes, merge trending market symbols</option>
+              <option value="false">No, only check scanner tickers</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="scan-frequency">Background Scan Interval</label>
+            <select id="scan-frequency">
+              <option value="30">Every 30 Minutes</option>
+              <option value="60">Every 60 Minutes</option>
+              <option value="120">Every 2 Hours</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="form-group">
+            <label for="portfolio-alerts-enabled">Portfolio Monitoring</label>
+            <select id="portfolio-alerts-enabled">
+              <option value="true">Enable Risk Warnings</option>
+              <option value="false">Disable Warnings</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="stop-loss-threshold">Stop-Loss Limit (%)</label>
+            <input type="number" id="stop-loss-threshold" placeholder="e.g. 5.0" step="0.1" min="0.1" value="5.0">
+          </div>
+          <div class="form-group">
+            <label for="sharp-drop-threshold">Sharp Drop Alert (%)</label>
+            <input type="number" id="sharp-drop-threshold" placeholder="e.g. 3.0" step="0.1" min="0.1" value="3.0">
+          </div>
+        </div>
+        <span class="desc">Choosing an investment profile customizes the semantic engine. Default exchange resolves suffixes. Scanner tickers define the live watchlist, while dynamic trending merges active symbols. Background interval updates scans. Stop-loss, sharp drop alerts, and monitoring settings manage risk boundaries for holdings you bought.</span>
+      </div>
+    </div>
+
+    <!-- Firebase configurations -->
+    <div class="glass-container" style="padding: 24px;">
+      <h2 style="font-size: 16px; margin-bottom: 20px; border-bottom: 1px solid var(--border-glass); padding-bottom: 8px; color: var(--text-slate-light);">
+        Firebase Cloud Synchronization (Watchlist Ledger)
+      </h2>
+      <div class="settings-section">
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="fb-project">Firebase Project ID</label>
+            <input type="text" id="fb-project" placeholder="e.g. alpha-market-ledger">
+          </div>
+          <div class="form-group">
+            <label for="fb-key">Firebase Web API Key</label>
+            <input type="password" id="fb-key" placeholder="Firebase Web Key">
+          </div>
+        </div>
+        <span class="desc">Configures remote sync to Firestore sandboxed path. Gracefully falls back to local storage if blank.</span>
+      </div>
+    </div>
+
+    <!-- Watchlist configuration -->
+    <div class="glass-container" style="padding: 24px;">
+      <h2 style="font-size: 16px; margin-bottom: 20px; border-bottom: 1px solid var(--border-glass); padding-bottom: 8px; color: var(--text-slate-light);">
+        Watchlist Configurations
+      </h2>
+      <div class="settings-section">
+        <div class="form-group">
+          <label for="watchlist-input">Periodic Check Tickers</label>
+          <input type="text" id="watchlist-input" placeholder="e.g. AAPL, NVDA, MSFT, TSLA">
+          <span class="desc">Comma-separated list of symbols audited by the background worker every 60 minutes.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert test triggers -->
+    <div class="glass-container" style="padding: 24px;">
+      <h2 style="font-size: 16px; margin-bottom: 20px; border-bottom: 1px solid var(--border-glass); padding-bottom: 8px; color: var(--text-slate-light);">
+        Breakthrough Dispatch Validator
+      </h2>
+      <div class="settings-section">
+        <div class="search-inline-container" style="margin: 0;">
+          <input type="text" id="test-ticker" placeholder="e.g. TSLA" style="flex:1;">
+          <button id="test-alert-btn" class="secondary">Dispatch Test Alert</button>
+        </div>
+        <span class="desc">Triggers immediate quant-semantic analysis, forecasting, and dispatches a styled HTML email alert to your inbox.</span>
+      </div>
+    </div>
+
+    <!-- Save block -->
+    <div style="display:flex; justify-content:flex-end; gap:12px;">
+      <button id="save-btn" class="primary" style="width: 150px;">Save Settings</button>
+    </div>
+  </div>
+
+  <script src="settings.js"></script>
+</body>
+</html>
