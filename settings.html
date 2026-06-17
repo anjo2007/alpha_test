@@ -116,9 +116,22 @@
         </div>
 
         <div class="form-group">
-          <label for="alert-email">Recipient Gmail Address</label>
-          <input type="email" id="alert-email" placeholder="e.g. devon.hale@gmail.com">
-          <span class="desc">The target inbox for automated breakthrough alerts.</span>
+          <label for="alert-email">Recipient Email Address</label>
+          <input type="email" id="alert-email" placeholder="e.g. anjo28mj@gmail.com">
+          <span class="desc">The target inbox for morning, evening, and volatility email alerts.</span>
+        </div>
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="github-repo">GitHub Repository (For Email Sync)</label>
+            <input type="text" id="github-repo" placeholder="e.g. anjo2007/alpha_test">
+            <span class="desc">The repo where your GitHub Actions automation is hosted.</span>
+          </div>
+          <div class="form-group">
+            <label for="github-pat">GitHub PAT (Token)</label>
+            <input type="password" id="github-pat" placeholder="ghp_...">
+            <span class="desc">Required to push your email securely to the GitHub automation.</span>
+          </div>
         </div>
 
         <div class="form-group">

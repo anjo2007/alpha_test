@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const geminiModelSelect = document.getElementById("gemini-model");
   const emailInput = document.getElementById("alert-email");
   const tokenInput = document.getElementById("gmail-token");
+  const githubRepoInput = document.getElementById("github-repo");
+  const githubPatInput = document.getElementById("github-pat");
   const fbProjectInput = document.getElementById("fb-project");
   const fbKeyInput = document.getElementById("fb-key");
   const watchlistInput = document.getElementById("watchlist-input");
@@ -34,6 +36,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (settings.geminiModel) geminiModelSelect.value = settings.geminiModel;
     if (settings.alertEmail) emailInput.value = settings.alertEmail;
     if (settings.gmailToken) tokenInput.value = settings.gmailToken;
+    if (settings.githubRepo) githubRepoInput.value = settings.githubRepo;
+    if (settings.githubPat) githubPatInput.value = settings.githubPat;
     if (settings.firebaseProject) fbProjectInput.value = settings.firebaseProject;
     if (settings.firebaseKey) fbKeyInput.value = settings.firebaseKey;
     
@@ -92,6 +96,8 @@ document.addEventListener("DOMContentLoaded", () => {
         geminiModel: geminiModelSelect.value,
         alertEmail: emailInput.value.trim(),
         gmailToken: tokenInput.value.trim(),
+        githubRepo: githubRepoInput.value.trim(),
+        githubPat: githubPatInput.value.trim(),
         firebaseProject: fbProjectInput.value.trim(),
         firebaseKey: fbKeyInput.value.trim(),
         investmentStyle: styleSelect.value,
@@ -116,6 +122,11 @@ document.addEventListener("DOMContentLoaded", () => {
         applyTheme(settings.theme);
         showToast("System configurations saved successfully.", "success");
 
+        // Sync Email to GitHub Actions if configured
+        if (settings.githubRepo && settings.githubPat && settings.alertEmail) {
+          syncEmailToGitHub(settings.alertEmail, settings.githubRepo, settings.githubPat);
+        }
+
         // Request background.js to sync the watchlist immediately to Firestore
         chrome.runtime.sendMessage({ action: "SYNC_WATCHLIST" }, () => {
           if (chrome.runtime.lastError) {
@@ -125,6 +136,41 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   });
+
+  // Sync email to GitHub repository variables
+  async function syncEmailToGitHub(email, repo, pat) {
+    const headers = {
+      "Authorization": `Bearer ${pat}`,
+      "Accept": "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "Content-Type": "application/json"
+    };
+
+    const varUrl = `https://api.github.com/repos/${repo}/actions/variables/ALERT_EMAIL`;
+    const payload = JSON.stringify({ name: "ALERT_EMAIL", value: email });
+
+    try {
+      // Try to update existing variable first
+      let res = await fetch(varUrl, { method: "PATCH", headers, body: payload });
+      if (res.status === 404) {
+        // If it doesn't exist, create it
+        const createUrl = `https://api.github.com/repos/${repo}/actions/variables`;
+        res = await fetch(createUrl, { method: "POST", headers, body: payload });
+      }
+
+      if (res.ok) {
+        console.log("Successfully synced ALERT_EMAIL to GitHub Actions.");
+        showToast("GitHub Sync: Email successfully updated in cloud automation.", "success");
+      } else {
+        const errorText = await res.text();
+        console.error("GitHub Sync Failed:", errorText);
+        showToast(`GitHub Sync Failed: Check Repo and PAT permissions.`, "error");
+      }
+    } catch (err) {
+      console.error("GitHub Sync Error:", err);
+      showToast(`GitHub Sync Error: ${err.message}`, "error");
+    }
+  }
 
   // Test Alert Dispatch validator
   testAlertBtn.addEventListener("click", () => {
