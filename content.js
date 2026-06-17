@@ -1,4 +1,4 @@
-// content.js - ALPHA Quant-Semantic Forecast Content Script
+// content.js - AuraTrade Quant-Semantic Forecast Content Script
 
 (function() {
   if (window.alphaTerminalLoaded) return;
@@ -190,8 +190,8 @@
   // Floating AI Assistant Badge (FAB)
   const fab = document.createElement('button');
   fab.className = 'alpha-floating-badge';
-  fab.innerHTML = `📊 <span>ALPHA</span>`;
-  fab.title = "Toggle ALPHA Terminal";
+  fab.innerHTML = `📊 <span>AuraTrade</span>`;
+  fab.title = "Toggle AuraTrade Terminal";
   shadow.appendChild(fab);
 
   let currentActiveTicker = null;
@@ -331,7 +331,7 @@
       <div class="sb-header">
         <div class="sb-title">
           <img src="${chrome.runtime.getURL('icon.png')}" style="width:20px; height:20px; border-radius:4px; margin-right:4px;">
-          ALPHA // FORECAST
+          AuraTrade // FORECAST
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
           <button class="theme-toggle-btn" id="alpha-theme-toggle" title="Toggle Theme" style="background:none; border:none; cursor:pointer;">${sunMoonIcon}</button>
@@ -1123,7 +1123,7 @@
     const contentArea = shadow.getElementById('alpha-content-area');
     contentArea.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
-        <span style="font-size:11px; color:var(--text-slate-dim);">ALPHA AI Market Advisor</span>
+        <span style="font-size:11px; color:var(--text-slate-dim);">AuraTrade AI Market Advisor</span>
         <button id="chat-sidebar-clear-btn" class="secondary" style="padding:4px 10px; font-size:11px; font-weight:700; border-radius:4px;">Clear Chat</button>
       </div>
       <div class="chat-container">
@@ -1167,8 +1167,8 @@
           const welcome = document.createElement("div");
           welcome.className = "chat-bubble model";
           welcome.innerHTML = `
-            <span class="chat-bubble-author">ALPHA</span>
-            <div>Hello! I am your **ALPHA AI Market Advisor**. How can I assist you with your investment decisions today?</div>
+            <span class="chat-bubble-author">AuraTrade</span>
+            <div>Hello! I am your **AuraTrade AI Market Advisor**. How can I assist you with your investment decisions today?</div>
           `;
           chatMessagesEl.appendChild(welcome);
         } else {
@@ -1176,7 +1176,7 @@
             const bubble = document.createElement("div");
             bubble.className = `chat-bubble ${msg.role}`;
             
-            let author = msg.role === 'user' ? 'You' : 'ALPHA';
+            let author = msg.role === 'user' ? 'You' : 'AuraTrade';
             let bubbleHTML = `<span class="chat-bubble-author">${author}</span>`;
             bubbleHTML += `<div>${parseMarkdown(msg.text)}</div>`;
             
@@ -1214,7 +1214,7 @@
       loadBubble.className = "chat-bubble model chat-loading-bubble";
       loadBubble.id = "chat-sidebar-loading-bubble";
       loadBubble.innerHTML = `
-        <span class="chat-bubble-author">ALPHA</span>
+        <span class="chat-bubble-author">AuraTrade</span>
         <div class="loading-pulse" style="flex-direction:row; justify-content:flex-start; gap:8px; align-items:center;">
           <div class="loading-spinner" style="width:14px; height:14px; border-width:1.5px; margin:0;"></div>
           <span style="font-size:11px;">Analysing market conditions...</span>

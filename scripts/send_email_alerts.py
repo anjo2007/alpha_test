@@ -117,12 +117,12 @@ if __name__ == "__main__":
         volatility_html = fetch_volatility_alerts(threshold_pct=2.0)
         
         if volatility_html:
-            subject = f"⚠️ ALPHA Volatility Alert - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+            subject = f"⚠️ AuraTrade Volatility Alert - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
             email_html = f"""
             <html>
               <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
                 <div style="background-color: #ffffff; padding: 20px; border-radius: 8px; border-left: 4px solid #ef4444; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                  <h2 style="color: #ef4444; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">ALPHA // Volatility Detected</h2>
+                  <h2 style="color: #ef4444; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">AuraTrade // Volatility Detected</h2>
                   <p style="color: #555;">Significant market movement has been detected in your watchlist (>2% swing).</p>
                   <ul style="list-style-type: none; padding-left: 0; line-height: 1.8;">
                     {volatility_html}
@@ -138,12 +138,12 @@ if __name__ == "__main__":
     else:
         print("Running Daily Market Summary...")
         market_data_html = fetch_market_summary()
-        subject = f"ALPHA Daily Market Alert - {datetime.now().strftime('%Y-%m-%d')}"
+        subject = f"AuraTrade Daily Market Alert - {datetime.now().strftime('%Y-%m-%d')}"
         email_html = f"""
         <html>
           <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
             <div style="background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-              <h2 style="color: #0284C7; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">ALPHA // Market Summary</h2>
+              <h2 style="color: #0284C7; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">AuraTrade // Market Summary</h2>
               <p style="color: #555;">Here is your automated market update.</p>
               <ul style="list-style-type: none; padding-left: 0; line-height: 1.8;">
                 {market_data_html}

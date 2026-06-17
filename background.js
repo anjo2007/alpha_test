@@ -1,4 +1,4 @@
-// background.js - ALPHA Quant-Semantic Forecast Service Worker (v2.0 — Peak Engine)
+// background.js - AuraTrade Quant-Semantic Forecast Service Worker (v2.0 — Peak Engine)
 
 const DEFAULT_WATCHLIST = ["RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS"];
 const APP_ID = "alpha-quant-semantic-terminal";
@@ -63,7 +63,7 @@ async function fetchWithRetry(url, options = {}, maxRetries = 3) {
 
 // ─── Initialize Alarm and Storage on Installation ─────────────────────────────
 chrome.runtime.onInstalled.addListener(() => {
-  console.log("ALPHA Quant-Semantic Terminal v2.0 Installed.");
+  console.log("AuraTrade Quant-Semantic Terminal v2.0 Installed.");
   chrome.storage.local.get(["watchlist", "settings"], (result) => {
     if (!result.watchlist) {
       chrome.storage.local.set({ watchlist: DEFAULT_WATCHLIST });
@@ -1405,10 +1405,10 @@ async function updateModelWeights(ticker, actualPrice) {
         alphaPredictions: updatedPredictions, 
         alphaModelWeights: weights 
       }, r));
-      console.log(`ALPHA Adaptive Model updated weights for ${ticker}. Correction factor: ${weights.tickerCorrections[ticker]}, w_q: ${weights.w_q}, w_f: ${weights.w_f}, w_s: ${weights.w_s}, w_m: ${weights.w_m}`);
+      console.log(`AuraTrade Adaptive Model updated weights for ${ticker}. Correction factor: ${weights.tickerCorrections[ticker]}, w_q: ${weights.w_q}, w_f: ${weights.w_f}, w_s: ${weights.w_s}, w_m: ${weights.w_m}`);
     }
   } catch (err) {
-    console.error("ALPHA self-learning model update failed:", err);
+    console.error("AuraTrade self-learning model update failed:", err);
   }
 }
 
@@ -1730,7 +1730,7 @@ function sendBrowserNotification(ticker, fScore, direction) {
     chrome.notifications.create(`alpha-${ticker}-${Date.now()}`, {
       type: "basic",
       iconUrl: "icon.png",
-      title: `${emoji} ALPHA Breakthrough: ${ticker.split('.')[0]}`,
+      title: `${emoji} AuraTrade Breakthrough: ${ticker.split('.')[0]}`,
       message: `F-Score: ${safeToFixed(fScore, 2)} — ${direction === "BUY" ? "Strong Buy" : "Strong Sell"} signal detected. Tap to open report.`,
       priority: 2
     });
@@ -1981,7 +1981,7 @@ async function sendGmailAlert(token, settings, ticker, fScore, report) {
   const isIndian = ticker.endsWith(".NS") || ticker.endsWith(".BO");
   const currencySymbol = isIndian ? "₹" : "$";
 
-  const subject = `[ALPHA ALERT] Breakthrough: ${ticker} (F-Score: ${safeToFixed(fScore, 2)})`;
+  const subject = `[AuraTrade ALERT] Breakthrough: ${ticker} (F-Score: ${safeToFixed(fScore, 2)})`;
   
   const isBullish = fScore >= 0.85;
   const badgeColor = isBullish ? "#0284C7" : "#D946EF";
@@ -2028,7 +2028,7 @@ async function sendGmailAlert(token, settings, ticker, fScore, report) {
     <body>
       <div class="card">
         <div class="header">
-          <span class="logo">ALPHA v2.0</span>
+          <span class="logo">AuraTrade v2.0</span>
           <span class="ticker-badge">${ticker}</span>
         </div>
         
@@ -2164,7 +2164,7 @@ async function sendGmailAlert(token, settings, ticker, fScore, report) {
 
         <div class="footer">
           Automated forecast analysis generated on ${new Date(report.timestamp).toLocaleString()}<br>
-          ALPHA v2.0 Multi-Modal Quant-Semantic Browser Integration.
+          AuraTrade v2.0 Multi-Modal Quant-Semantic Browser Integration.
         </div>
       </div>
     </body>
@@ -2301,7 +2301,7 @@ async function handleSendChat(userMessage, chatHistory = []) {
   const sellsSummary = sells.map(s => `${s.ticker.split('.')[0]} (Price: ${formatCurrencySimple(s.price, s.ticker)}, Change: ${safeToFixed(s.changePercent, 2)}%, F-Score: ${safeToFixed(s.fScore, 2)}, RSI: ${safeToFixed(s.rsi, 1)})`).join(', ') || "None";
   const watchlistSummary = watchlist.join(', ') || "Empty";
 
-  const systemInstructionText = `You are ALPHA Chat, a premium, intelligent stock market co-pilot tailored for the Indian stock market. 
+  const systemInstructionText = `You are AuraTrade Chat, a premium, intelligent stock market co-pilot tailored for the Indian stock market. 
 Your goal is to guide the user in selecting stocks based on their specific conditions and real-time market data.
 
 You have access to the user's configuration and local real-time market context:

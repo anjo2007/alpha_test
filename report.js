@@ -1,4 +1,4 @@
-// report.js - ALPHA Full-Page Analytical Report Dashboard
+// report.js - AuraTrade Full-Page Analytical Report Dashboard
 
 document.addEventListener("DOMContentLoaded", () => {
   // Safety toFixed wrapper to prevent null/undefined property exceptions
@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = `ALPHA_${resp.ticker}_${new Date().toISOString().slice(0,10)}.csv`;
+          a.download = `AuraTrade_${resp.ticker}_${new Date().toISOString().slice(0,10)}.csv`;
           a.click();
           URL.revokeObjectURL(url);
         });

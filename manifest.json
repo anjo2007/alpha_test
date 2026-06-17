@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "ALPHA Quant-Semantic Terminal",
+  "name": "AuraTrade Quant-Semantic Terminal",
   "version": "1.0.0",
   "description": "Real-time browser-native quantitative and search-grounded semantic intelligence.",
   "permissions": [
@@ -29,7 +29,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "ALPHA Terminal",
+    "default_title": "AuraTrade Terminal",
     "default_icon": {
       "16": "icon16.png",
       "48": "icon48.png",

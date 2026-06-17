@@ -1,4 +1,4 @@
-// settings.js - ALPHA Configurator Script
+// settings.js - AuraTrade Configurator Script
 
 document.addEventListener("DOMContentLoaded", () => {
   const geminiInput = document.getElementById("gemini-key");

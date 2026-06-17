@@ -1,4 +1,4 @@
-// popup.js - ALPHA Extension Dashboard Controller
+// popup.js - AuraTrade Extension Dashboard Controller
 
 document.addEventListener("DOMContentLoaded", () => {
   // Safety toFixed wrapper to prevent null/undefined property exceptions
@@ -1276,7 +1276,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = `ALPHA_${resp.ticker}_${new Date().toISOString().slice(0,10)}.csv`;
+          a.download = `AuraTrade_${resp.ticker}_${new Date().toISOString().slice(0,10)}.csv`;
           a.click();
           URL.revokeObjectURL(url);
         });
@@ -1581,8 +1581,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const welcome = document.createElement("div");
         welcome.className = "chat-bubble model";
         welcome.innerHTML = `
-          <span class="chat-bubble-author">ALPHA</span>
-          <div>Hello! I am your **ALPHA AI Market Advisor**. How can I assist you with your investment decisions today? 
+          <span class="chat-bubble-author">AuraTrade</span>
+          <div>Hello! I am your **AuraTrade AI Market Advisor**. How can I assist you with your investment decisions today? 
           You can specify stock filters, watchlist conditions, or ask for sector analysis.</div>
         `;
         chatMessages.appendChild(welcome);
@@ -1591,7 +1591,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const bubble = document.createElement("div");
           bubble.className = `chat-bubble ${msg.role}`;
           
-          let author = msg.role === 'user' ? 'You' : 'ALPHA';
+          let author = msg.role === 'user' ? 'You' : 'AuraTrade';
           let bubbleHTML = `<span class="chat-bubble-author">${author}</span>`;
           bubbleHTML += `<div>${parseMarkdown(msg.text)}</div>`;
           
@@ -1632,7 +1632,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadBubble.className = "chat-bubble model chat-loading-bubble";
     loadBubble.id = "chat-loading-bubble";
     loadBubble.innerHTML = `
-      <span class="chat-bubble-author">ALPHA</span>
+      <span class="chat-bubble-author">AuraTrade</span>
       <div class="loading-pulse" style="flex-direction:row; justify-content:flex-start; gap:8px; align-items:center;">
         <div class="loading-spinner" style="width:14px; height:14px; border-width:1.5px; margin:0;"></div>
         <span style="font-size:11px;">Analysing market conditions...</span>
